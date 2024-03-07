@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { loginFormPayload, loginFormValidator } from "@/lib/validation/login";
 import Logo from "../../../../public/cypresslogo.svg";
 import Loader from "@/components/global/Loader";
+import { actionLoginUser } from "@/lib/server-actions/auth-actions";
 const LoginPage = () => {
   const router = useRouter();
   const [submitError, setSubmitError] = useState("");
@@ -36,7 +37,15 @@ const LoginPage = () => {
   const isLoading = form.formState.isSubmitting;
   const onSubmit: SubmitHandler<z.infer<typeof loginFormValidator>> = async (
     payload: loginFormPayload
-  ) => {};
+  ) => {
+    await actionLoginUser(payload);
+    const { error } = await actionLoginUser(payload);
+    if (error) {
+      form.reset();
+      setSubmitError(error.message);
+    }
+    router.replace('/dashboard');
+  };
 
   return (
     <Form {...form}>
@@ -89,7 +98,7 @@ const LoginPage = () => {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input type="password" placeholder="Password" {...field} />
+                <Input type="text" placeholder="Password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

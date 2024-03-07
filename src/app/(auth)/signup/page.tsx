@@ -9,7 +9,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
 import Loader from "@/components/global/Loader";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -23,8 +22,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 // import { actionSignUpUser } from '@/lib/server-actions/auth-actions';
-import { signUpFormValidator } from "@/lib/validation/signup";
+import { signUpFormValidator, signFormPayload } from "@/lib/validation/signup";
 import Logo from "../../../../public/cypresslogo.svg";
+import { actionSignUpUser } from "@/lib/server-actions/auth-actions";
 
 const Signup = () => {
   const router = useRouter();
