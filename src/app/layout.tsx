@@ -5,6 +5,8 @@ import db from "@/lib/supabase/db";
 import ThemeProvider from "@/lib/providers/next-theme-provider";
 import { twMerge } from "tailwind-merge";
 const dm_sans = DM_Sans({ subsets: ["latin"] });
+import { Toaster } from '@/components/ui/toaster';
+import AppStateProvider from "@/lib/providers/state-providers";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,12 +18,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  console.log(db);
   return (
     <html lang="en" className="dark">
       <body className={twMerge("bg-background", dm_sans.className)}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
+          <AppStateProvider>
+            {children}
+            <Toaster />
+          </AppStateProvider>
         </ThemeProvider>
       </body>
     </html>
