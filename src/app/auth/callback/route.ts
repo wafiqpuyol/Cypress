@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { type CookieOptions, createServerClient } from "@supabase/ssr";
+import { createUser } from "@/lib/supabase/queries";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -27,8 +28,18 @@ export async function GET(request: Request) {
         },
       }
     );
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
+      const userData = {
+        id: user?.id,
+        fullName: user?.user_metadata.full_name,
+        avatarUrl: user?.user_metadata.avatar_url,
+        email: user?.email,
+      };
+      await createUser(userData);
       console.log(`${origin}${next}`);
       return NextResponse.redirect(`${origin}${next}`);
     }
