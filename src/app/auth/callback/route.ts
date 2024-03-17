@@ -28,19 +28,8 @@ export async function GET(request: Request) {
         },
       }
     );
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.exchangeCodeForSession(code);
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      const userData = {
-        id: user?.id,
-        fullName: user?.user_metadata.full_name,
-        avatarUrl: user?.user_metadata.avatar_url,
-        email: user?.email,
-      };
-      await createUser(userData);
-      console.log(`${origin}${next}`);
       return NextResponse.redirect(`${origin}${next}`);
     }
   }

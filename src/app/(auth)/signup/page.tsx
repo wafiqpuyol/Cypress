@@ -57,7 +57,7 @@ const Signup = () => {
   const onSubmit = async ({
     email,
     password,
-  }: z.infer<typeof signUpFormValidator>) => {
+  }: Pick<signFormPayload, "password" | "email">) => {
     const { error } = await actionSignUpUser({ email, password });
     if (error) {
       setSubmitError(error.message);

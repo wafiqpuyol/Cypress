@@ -1,8 +1,8 @@
 "use client";
 
 import Loader from "@/components/global/Loader";
-import { createWorkspaceAction } from "@/lib/server-actions/workspace";
-import type { Subscription } from "@/lib/supabase/schema-type";
+import { createWorkspace } from "@/lib/supabase/queries";
+import type { Subscription, Workspace } from "@/lib/supabase/schema-type";
 import {
     workspacePayload,
     workspaceValidator,
@@ -75,7 +75,18 @@ const DashBoardSetup: FC<DashBoardSetupProps> = ({ subscription, user }) => {
 
         /* 𝗰𝗿𝗲𝗮𝘁𝗲 𝗮 𝗻𝗲𝘄 𝘄𝗼𝗿𝗸𝘀𝗽𝗮𝗰𝗲 */
         try {
-            const { data: newWorkspaceData, error: workspaceError } = await createWorkspaceAction(user.id, filePath, selectedEmoji, workspaceUUID, payload.workspaceName);
+            const newWorkspace: Workspace = {
+                id: workspaceUUID,
+                data: "",
+                logo: filePath,
+                title: payload.workspaceName,
+                workspaceOwner: user.id,
+                iconId: selectedEmoji,
+                inTrash: "",
+                bannerUrl: "",
+                createdAt: new Date().toISOString()
+            }
+            const { data: newWorkspaceData, error: workspaceError } = await createWorkspace(newWorkspace);
             if (workspaceError) {
                 throw new Error(workspaceError.message);
             }

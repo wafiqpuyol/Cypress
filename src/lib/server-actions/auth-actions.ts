@@ -4,6 +4,7 @@ import { z } from "zod";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { loginFormValidator } from "..//validation/login";
 import { cookies } from "next/headers";
+import { signFormPayload, signUpFormValidator } from "../validation/signup";
 
 export async function actionLoginUser({
   email,
@@ -20,7 +21,7 @@ export async function actionLoginUser({
 export async function actionSignUpUser({
   email,
   password,
-}: z.infer<typeof loginFormValidator>) {
+}:  Pick<signFormPayload, "password" | "email">) {
   const supabase = createRouteHandlerClient({ cookies });
   const { data } = await supabase
     .from("profiles")
