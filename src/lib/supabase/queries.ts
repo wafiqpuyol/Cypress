@@ -207,3 +207,36 @@ export const addWorkspaceCollaborator = async (
     return { data: null, error: error.message };
   }
 };
+
+export const updateFolder = async (
+  updatedField: Partial<Folder>,
+  folderId: string
+) => {
+  try {
+    const query = await db
+      .update(folders)
+      .set(updatedField)
+      .where(eq(folders.id, folderId))
+      .returning();
+    console.log(query);
+    return { data: query[0], error: null };
+  } catch (error: any) {
+    return { data: null, error: error.message };
+  }
+};
+
+export const updateFile = async (
+  updatedField: Partial<File>,
+  fileId: string
+) => {
+  try {
+    const query = await db
+      .update(files)
+      .set(updatedField)
+      .where(eq(files.id, fileId))
+      .returning();
+    return { data: query[0], error: null };
+  } catch (error: any) {
+    return { data: null, error: error.message };
+  }
+};
