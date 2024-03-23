@@ -25,32 +25,40 @@ interface CollaboratorSearchProps {
 }
 const CollaboratorSearch: FC<CollaboratorSearchProps> = ({ children, getCollaborator, existingCollaborators }) => {
     const { user } = useSupabaseUser();
-    const [searchResult, setSearchResult] = useState<User[]>([]);
+    const [searchResult, setSearchResult] = useState<User[] | string>([]);
     const [input, setInput] = useState("");
     const debouncedValue = useDebounce(input);
 
     useEffect(() => {
         (async () => {
-            if (input.trim() !== "") {
+            if (debouncedValue.trim() !== "") {
                 const { data: users, error } = await getUsersByEmail(debouncedValue);
-                if (!!users?.length) {
-                    setSearchResult(users);
-                }
                 if (error) {
                     toast({
                         title: "Something went wrong while searching user",
+                        description: "Some server error occurred. Please try again later",
                         variant: "destructive"
                     })
+                    setSearchResult(users)
+                }
+                if (!users.length) {
+                    setSearchResult("No user found")
+                }
+                if (users.length) {
+                    setSearchResult(users);
                 }
             } else {
-                setSearchResult([]);
+                setSearchResult([])
             }
         })();
     }, [debouncedValue])
 
 
     return (
-        <Sheet onOpenChange={() => setSearchResult([])}>
+        <Sheet onOpenChange={() => {
+            setInput("");
+            setSearchResult([])
+        }}>
             <SheetTrigger>{children}</SheetTrigger>
             <SheetContent>
                 <SheetHeader>
@@ -67,7 +75,7 @@ const CollaboratorSearch: FC<CollaboratorSearchProps> = ({ children, getCollabor
                 </div>
                 {/* Render search result */}
                 <ScrollArea className='mt-6 overflow-y-scroll w-full rounded-md'>
-                    {searchResult.filter(searchedUser => !existingCollaborators.some(existingCollaborator => searchedUser.id === existingCollaborator.id))
+                    {Array.isArray(searchResult) ? searchResult.filter(searchedUser => !existingCollaborators.some(existingCollaborator => searchedUser.id === existingCollaborator.id))
                         .filter(u => u.id !== user?.id)
                         .map((user) => (
                             <div key={user.id} className='p-4 flex justify-between items-center'>
@@ -88,7 +96,7 @@ const CollaboratorSearch: FC<CollaboratorSearchProps> = ({ children, getCollabor
                                     Add
                                 </Button>
                             </div>))
-                    }
+                        : <p>{input && searchResult}</p>}
                 </ScrollArea>
             </SheetContent>
         </Sheet>

@@ -173,7 +173,7 @@ export const getFiles = async (
 
 export const getUsersByEmail = async (
   email: string
-): Promise<{ data: User[] | []; error: any }> => {
+): Promise<{ data: User[] | string; error: any }> => {
   try {
     const accounts = await db
       .select()
@@ -181,7 +181,7 @@ export const getUsersByEmail = async (
       .where(ilike(users.email, `${email}%`));
     return { data: accounts, error: null };
   } catch (error: any) {
-    return { data: [], error: error.message };
+    return { data: "No user found", error: error.message };
   }
 };
 
