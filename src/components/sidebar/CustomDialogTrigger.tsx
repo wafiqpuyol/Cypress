@@ -11,10 +11,10 @@ import clsx from 'clsx';
 
 
 interface CustomDialogTriggerProps {
-    header: string;
-    description: string;
+    header?: string;
+    description?: string;
     children: React.ReactNode
-    content: React.ReactNode
+    content?: React.ReactNode
     className?: string
 }
 const CustomDialogTrigger: FC<CustomDialogTriggerProps> = ({ children, description, header, content, className }) => {
