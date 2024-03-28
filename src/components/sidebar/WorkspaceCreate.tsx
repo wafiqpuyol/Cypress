@@ -65,7 +65,6 @@ const WorkspaceCreate = () => {
                         variant: "destructive"
                     })
                 }
-                router.refresh();
             }
             if (permission === "shared") {
                 const { error: createWorkspaceError } = await createWorkspace(newWorkspace);
@@ -83,10 +82,9 @@ const WorkspaceCreate = () => {
                 }
                 toast({
                     title: "Workspace created successfully",
-                    variant: "destructive"
                 })
-                router.refresh();
             }
+            router.refresh();
         } else {
             setError("Please choose a workspace type");
         }

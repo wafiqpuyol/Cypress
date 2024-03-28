@@ -19,7 +19,7 @@ const WorkspaceDropDown: FC<WorkspaceDropDownProps> = ({
     privateWorkspaces,
     sharedWorkspaces
 }) => {
-    const { state, dispatch } = useAppState();
+    const { state, dispatch, workspaceId } = useAppState();
     const [currentWorkspace, setCurrentWorkspace] = useState(defaultValue);
     const [isOpen, setIsOpen] = useState(false);
     const handleClick = (option: Workspace) => {
@@ -41,6 +41,12 @@ const WorkspaceDropDown: FC<WorkspaceDropDownProps> = ({
             });
         }
     }, [privateWorkspaces, collaboratingWorkspaces, sharedWorkspaces, state.workspaces.length]);
+
+    useEffect(() => {
+        const workspace = state.workspaces.find(w => w.id === workspaceId)
+        if (workspace) setCurrentWorkspace(workspace);
+    }, [workspaceId, state])
+
 
     return <div className="relative inline-block text-left">
         <div>
