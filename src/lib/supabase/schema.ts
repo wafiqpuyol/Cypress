@@ -35,7 +35,9 @@ export const folders = pgTable("folders", {
   createdAt: timestamp("created_at", {
     withTimezone: true,
     mode: "string",
-  }),
+  })
+    .defaultNow()
+    .notNull(),
   workspaceId: uuid("workspace_id")
     .notNull()
     .references(() => workspaces.id, {
@@ -53,7 +55,9 @@ export const files = pgTable("files", {
   createdAt: timestamp("created_at", {
     withTimezone: true,
     mode: "string",
-  }),
+  })
+    .defaultNow()
+    .notNull(),
   workspaceId: uuid("workspace_id")
     .notNull()
     .references(() => workspaces.id, {
