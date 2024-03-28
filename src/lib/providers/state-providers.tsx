@@ -11,76 +11,16 @@ import React, {
 import { File, Folder, Workspace } from "../supabase/schema-type";
 import { usePathname } from "next/navigation";
 import { getFiles } from "../supabase/queries";
-
+import { Action } from "@/types/type"
 export type appFoldersType = Folder & { files: File[] | [] };
 export type appWorkspacesType = Workspace & {
   folders: appFoldersType[] | [];
 };
 
-interface AppState {
-  workspaces: appWorkspacesType[] | [];
+export interface AppState {
+  workspaces: appWorkspacesType[] | []
 }
 
-type Action =
-  | {
-    type: "ADD_WORKSPACE";
-    payload: appWorkspacesType
-  }
-  | {
-    type: "DELETE_WORKSPACE";
-    payload: string
-  }
-  | {
-    type: "UPDATE_WORKSPACE";
-    payload: { workspace: Partial<appWorkspacesType>; workspaceId: string };
-  }
-  | {
-    type: "SET_WORKSPACES";
-    payload: { workspaces: appWorkspacesType[] | [] };
-  }
-  | {
-    type: "SET_FOLDERS";
-    payload: { workspaceId: string; folders: [] | appFoldersType[] };
-  }
-  | {
-    type: "ADD_FOLDER";
-    payload: { workspaceId: string; folder: appFoldersType };
-  }
-  | {
-    type: "ADD_FILE";
-    payload: { workspaceId: string; file: File; folderId: string };
-  }
-  | {
-    type: "DELETE_FILE";
-    payload: { workspaceId: string; folderId: string; fileId: string };
-  }
-  | {
-    type: "DELETE_FOLDER";
-    payload: { workspaceId: string; folderId: string };
-  }
-  | {
-    type: "SET_FILES";
-    payload: { workspaceId: string; files: File[]; folderId: string };
-  }
-  |
-  {
-    type: "UPDATE_FOLDER";
-    payload: {
-      folder: Partial<appFoldersType>;
-      workspaceId: string;
-      folderId: string;
-    };
-  }
-  |
-  {
-    type: "UPDATE_FILE";
-    payload: {
-      file: Partial<File>;
-      folderId: string;
-      workspaceId: string;
-      fileId: string;
-    };
-  };
 
 const initialState: AppState = { workspaces: [] };
 
@@ -316,16 +256,16 @@ const AppStateProvider: React.FC<AppStateProviderProps> = ({ children }) => {
   const folderId = useMemo(() => {
     const urlSegments = pathname?.split("/").filter(Boolean);
     if (urlSegments)
-      if (urlSegments?.length > 2) {
-        return urlSegments[2];
+      if (urlSegments?.length > 3) {
+        return urlSegments[3];
       }
   }, [pathname]);
 
   const fileId = useMemo(() => {
     const urlSegments = pathname?.split("/").filter(Boolean);
     if (urlSegments)
-      if (urlSegments?.length > 3) {
-        return urlSegments[3];
+      if (urlSegments?.length > 5) {
+        return urlSegments[5];
       }
   }, [pathname]);
 
