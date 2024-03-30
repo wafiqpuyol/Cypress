@@ -1,5 +1,11 @@
+import {
+  appFoldersType,
+  appWorkspacesType,
+} from "@/lib/providers/state-providers";
 import { File } from "@/lib/supabase/schema-type";
-
+import { Socket, Server as NetServer } from "net";
+import { Server as SocketIOServer } from "socket.io";
+import { NextApiResponse } from "next";
 export type Action =
   | { type: "ADD_WORKSPACE"; payload: appWorkspacesType }
   | { type: "DELETE_WORKSPACE"; payload: string }
@@ -52,3 +58,11 @@ export type Action =
         fileId: string;
       };
     };
+
+export type NextApiResponseServerIo = NextApiResponse & {
+  socket: Socket & {
+    server: NetServer & {
+      io: SocketIOServer;
+    };
+  };
+};

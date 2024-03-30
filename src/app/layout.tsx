@@ -8,6 +8,7 @@ const dm_sans = DM_Sans({ subsets: ["latin"] });
 import { Toaster } from '@/components/ui/toaster';
 import AppStateProvider from "@/lib/providers/state-providers";
 import { SupabaseUserProvider } from "@/lib/providers/supabase-user-provider";
+import { SocketProvider } from "@/lib/providers/socket-provider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -25,8 +26,10 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AppStateProvider>
             <SupabaseUserProvider>
-              {children}
-              <Toaster />
+              <SocketProvider>
+                {children}
+                <Toaster />
+              </SocketProvider>
             </SupabaseUserProvider>
           </AppStateProvider>
         </ThemeProvider>
