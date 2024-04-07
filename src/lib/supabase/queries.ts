@@ -260,3 +260,18 @@ export const getUserById = async (workspaceOwnerId: string) => {
     return { data: null, error: error.message };
   }
 };
+
+export const updateWorkspace = async (
+  workspaceUpdateData: Partial<Workspace>,
+  workspaceId: string
+) => {
+  try {
+    await db
+      .update(workspaces)
+      .set(workspaceUpdateData)
+      .where(eq(workspaces.id, workspaceId));
+    return { data: null, error: null };
+  } catch (error: any) {
+    return { data: null, error: error.message };
+  }
+};
