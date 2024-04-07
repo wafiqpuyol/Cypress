@@ -240,3 +240,23 @@ export const updateFile = async (
     return { data: null, error: error.message };
   }
 };
+
+export const getUserById = async (workspaceOwnerId: string) => {
+  try {
+    const isWorkspaceExist = await db
+      .select()
+      .from(workspaces)
+      .where(eq(workspaces.workspaceOwner, workspaceOwnerId));
+    if (!isWorkspaceExist.length) {
+      throw new Error("This id does not have it's own workspace");
+    }
+
+    const query = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, isWorkspaceExist[0].workspaceOwner));
+    return { data: query[0], error: null };
+  } catch (error: any) {
+    return { data: null, error: error.message };
+  }
+};
