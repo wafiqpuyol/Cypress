@@ -31,7 +31,7 @@ const CollaboratorSearch: FC<CollaboratorSearchProps> = ({ children, getCollabor
 
     useEffect(() => {
         (async () => {
-            if (debouncedValue.trim() !== "") {
+            if ((typeof debouncedValue === "string") && debouncedValue.trim() !== "") {
                 const { data: users, error } = await getUsersByEmail(debouncedValue);
                 if (error) {
                     toast({
