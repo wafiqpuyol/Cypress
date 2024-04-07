@@ -9,7 +9,7 @@ import { collaborators } from "@/lib/supabase/schema";
 export const userSubscriptionStatus = async (userId: string) => {
   try {
     const query = await db.query.subscriptions.findFirst({
-      where: (subscription, { eq }) => eq(subscription.id, userId),
+      where: (subscription, { eq }) => eq(subscription.userId, userId),
     });
     if (!query) return { data: null, error: null };
     return { data: query, error: null };
