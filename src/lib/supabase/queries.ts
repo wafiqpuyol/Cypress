@@ -275,3 +275,93 @@ export const updateWorkspace = async (
     return { data: null, error: error.message };
   }
 };
+export const addCollaborators = async (users: User[], workspaceId: string) => {
+  try {
+    users.forEach(async (user: User) => {
+      try {
+        const existingUser = await db.query.collaborators.findFirst({
+          where: (collaborator, { eq }) =>
+            and(
+              eq(collaborator.userId, user.id),
+              eq(collaborator.workspaceId, workspaceId)
+            ),
+        });
+
+        if (!existingUser) {
+          await db
+            .insert(collaborators)
+            .values({ workspaceId, userId: user.id });
+        }
+      } catch (error) {
+        throw new Error();
+      }
+    });
+    return { data: "Success", error: null };
+  } catch (error: any) {
+    return { data: null, error: error.message };
+  }
+};
+
+export const removeCollaborators = async (
+  users: User[],
+  workspaceId: string
+) => {
+  try {
+    users.forEach(async (user: User) => {
+      try {
+        const existingUser = await db.query.collaborators.findFirst({
+          where: (collaborator, { eq }) =>
+            and(
+              eq(collaborator.userId, user.id),
+              eq(collaborator.workspaceId, workspaceId)
+            ),
+        });
+
+        if (existingUser) {
+          await db
+            .delete(collaborators)
+            .where(
+              and(
+                eq(collaborators.userId, existingUser.id),
+                eq(collaborators.workspaceId, existingUser.workspaceId)
+              )
+            );
+        }
+      } catch (error: any) {
+        throw new Error(error.message);
+      }
+    });
+
+    return { data: "Success", error: null };
+  } catch (error: any) {
+    return { data: null, error: error?.message || error };
+  }
+};
+
+export const getCollaborators = async (workspaceId: string) => {
+  try {
+    const query = await db
+      .select()
+      .from(collaborators)
+      .where(eq(collaborators.workspaceId, workspaceId));
+
+    if (!query.length) {
+      return { data: null, error: null };
+    }
+
+    const users = (
+      await Promise.all(
+        query.map((collaborator) => {
+          const existedUser = db.query.users.findFirst({
+            where: (user, { eq }) => eq(user.id, collaborator.userId),
+          });
+          return existedUser;
+        })
+      )
+    ).filter((user) => user != undefined) as User[];
+
+    return { data: users, error: null };
+  } catch (error: any) {
+    return { data: null, error: error.message };
+  }
+};
