@@ -365,3 +365,17 @@ export const getCollaborators = async (workspaceId: string) => {
     return { data: null, error: error.message };
   }
 };
+
+export const getActiveProductsWithPrice = async () => {
+  try {
+    const query = await db.query.products.findMany({
+      where: (product, { eq }) => eq(product.active, true),
+      /**
+       * TODO include price information from price table
+       */
+    });
+    return { data: query, error: null };
+  } catch (error: any) {
+    return { data: [], error: error.message };
+  }
+};
