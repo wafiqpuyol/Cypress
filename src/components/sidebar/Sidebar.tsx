@@ -13,6 +13,7 @@ import { twMerge } from 'tailwind-merge'
 import { validate } from "uuid"
 import WorkspaceDropDown from "./WorkspaceDropDown"
 import UserPlanUsage from './UserPlanUsage'
+import NativeNavigation from './NativeNavigation'
 
 interface SidebarProp {
     params: { workspaceId: string }
@@ -57,6 +58,7 @@ const Sidebar: FC<SidebarProp> = async ({ params: { workspaceId }, className }) 
                     }
                 />
                 <UserPlanUsage subscription={subscription} numberOfFolder={folders.length} />
+                <NativeNavigation currentWorkspaceId={workspaceId} />
             </div>
 
         </aside>
