@@ -7,8 +7,8 @@ import {
   subscriptions,
   users,
   workspaces,
+  files,
 } from "../../../migrations/schema";
-import { files } from "./schema";
 
 export type Json =
   | string
