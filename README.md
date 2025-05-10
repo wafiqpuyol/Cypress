@@ -1,36 +1,211 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 📝 Collabify | Real-time Collaborative Workspace
 
-## Getting Started
+![Collabify Banner](https://via.placeholder.com/1200x400)
 
-First, run the development server:
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Next.js 13](https://img.shields.io/badge/Next.js_13-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-181818?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.io/)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Stripe](https://img.shields.io/badge/Stripe-008CDD?style=for-the-badge&logo=stripe&logoColor=white)](https://stripe.com/)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🚀 Overview
+
+Collabify is a production-ready collaborative workspace platform inspired by Notion, built with a modern tech stack focusing on real-time collaboration. Experience seamless multi-user editing with real-time cursors, text selection, and presence indicators.
+
+### [✨ Live Demo](https://demo-link.com) | [🎥 Video Walkthrough](https://video-link.com)
+
+## ⚡ Core Technologies
+
+- **Frontend**: Next.js 13 (App Router), React, TypeScript, TailwindCSS
+- **Backend**: Supabase, WebSockets, Drizzle ORM
+- **Real-time**: Custom WebSocket implementation for cursors, selection, and presence
+- **Authentication**: Custom auth flow with 2FA email invitations
+- **Payments**: Stripe integration with customer portal
+- **Database**: PostgreSQL with row-level security policies
+
+## 🔥 Key Features
+
+### Collaborative Editing
+- Real-time cursor tracking shows exactly where teammates are working
+- Text selection visualization across multiple users
+- Presence indicators show who's online and their current location
+- Custom rich text editor with collaborative editing
+
+### Enterprise-Grade Security
+- Row-level security policies with Supabase
+- Custom authentication system
+- Email-based 2FA for workspace invitations
+
+### Seamless User Experience
+- Optimistic UI updates for zero-lag feel
+- Custom emoji picker for expressive communication
+- Light/dark mode with system preference detection
+- Trash functionality with restore options
+- Responsive design works across all devices
+
+### Monetization Ready
+- Stripe integration for subscription management
+- Custom pricing plans with feature restrictions
+- User-friendly payment portal
+
+## 🖥️ Architecture Overview
+
+```
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│                 │     │                  │     │                 │
+│  Next.js 13     │◄────┤  WebSocket       │◄────┤  Supabase       │
+│  Frontend       │     │  Server          │     │  PostgreSQL     │
+│                 │     │                  │     │                 │
+└────────┬────────┘     └──────────────────┘     └─────────────────┘
+         │                                               ▲
+         │                                               │
+         │                                               │
+         ▼                                               │
+┌─────────────────┐                             ┌─────────────────┐
+│                 │                             │                 │
+│  Stripe         │◄───────────────────────────┤  Drizzle ORM    │
+│  Payments       │                             │  Layer          │
+│                 │                             │                 │
+└─────────────────┘                             └─────────────────┘
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📸 Screenshots
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+<div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+  <img src="https://via.placeholder.com/400x225" width="48%" alt="Real-time collaboration" />
+  <img src="https://via.placeholder.com/400x225" width="48%" alt="Document editing" />
+</div>
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+<div style="display: flex; justify-content: space-between;">
+  <img src="https://via.placeholder.com/400x225" width="48%" alt="Dashboard view" />
+  <img src="https://via.placeholder.com/400x225" width="48%" alt="Payment portal" />
+</div>
 
-## Learn More
+## 🛠️ Technical Highlights
 
-To learn more about Next.js, take a look at the following resources:
+### Real-time Implementation
+Our custom WebSocket implementation handles differential synchronization between clients with minimal bandwidth usage and optimistic UI updates.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```typescript
+// Example of real-time cursor tracking implementation
+const updateCursorPosition = useCallback(
+  throttle((position: CursorPosition) => {
+    if (!socket || !user) return;
+    
+    // Send position only if it changed significantly
+    if (Math.abs(position.x - lastPosition.current.x) > 5 || 
+        Math.abs(position.y - lastPosition.current.y) > 5) {
+      socket.emit('cursor:update', {
+        position,
+        userId: user.id,
+        documentId: currentDocument.id
+      });
+      lastPosition.current = position;
+    }
+  }, 50),
+  [socket, user, currentDocument]
+);
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+### Row-Level Security
+Supabase RLS policies ensure users can only access authorized content:
 
-## Deploy on Vercel
+```sql
+-- Example of row-level security policy
+CREATE POLICY "Users can only view their own documents" ON documents
+  FOR SELECT USING (
+    auth.uid() IN (
+      SELECT user_id FROM workspace_users
+      WHERE workspace_id = documents.workspace_id
+    )
+  );
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Performance Optimizations
+- Server Components for reduced client JS
+- Selective hydration for interactive elements
+- Chunked data loading with Suspense boundaries
+- Efficient WebSocket message batching
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+
+- PostgreSQL database
+- Stripe account
+
+### Installation
+
+1. Clone the repository
+   ```bash
+   git clone https://github.com/yourusername/collabify.git
+   cd collabify
+   ```
+
+2. Install dependencies
+   ```bash
+   npm install
+   ```
+
+3. Configure environment variables
+   ```bash
+   cp .env.example .env.local
+   # Fill in your environment variables
+   ```
+
+4. Set up the database
+   ```bash
+   npm run db:migrate
+   ```
+
+5. Start the development server
+   ```bash
+   npm run dev
+   ```
+
+## 📚 Documentation
+
+For detailed documentation on the architecture and implementation details:
+- [Architecture Overview](./docs/ARCHITECTURE.md)
+- [Real-time Implementation](./docs/REALTIME.md)
+- [Authentication Flow](./docs/AUTH.md)
+- [Database Schema](./docs/SCHEMA.md)
+
+## 🧪 Testing
+
+```bash
+# Run unit tests
+npm run test
+
+# Run end-to-end tests
+npm run test:e2e
+
+# Run integration tests
+npm run test:integration
+```
+
+## 🔮 Future Roadmap
+
+- [ ] AI-powered content suggestions
+- [ ] Real-time commenting system
+- [ ] Advanced permissions and roles
+- [ ] Custom templates marketplace
+- [ ] Mobile applications
+- [ ] API for third-party integrations
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgements
+
+- [Vercel](https://vercel.com) for hosting
+- [Supabase](https://supabase.io) for database and authentication
+- [Stripe](https://stripe.com) for payment processing
+- The amazing open-source community for their tools and inspiration
+
+---
+
+<p align="center">
+  <sub>Built with ❤️ by <a href="https://github.com/yourusername">YourName</a></sub>
+</p>
